@@ -17,6 +17,7 @@
         h2 {
             color: gray;
         }
+     
     </style>
 
     <!-- Adicionando JQuery -->
@@ -37,39 +38,55 @@
         console.log(country);
         console.log(media);
 
-        if (term == "") {
+        if (term == '') {
             alert("Necessário preencher campos obrigatórios!")
             return null;
         }
 
         var url = "https://itunes.apple.com/search?term="+term+"&country="+country;
         
-        if (media != "")
-            url += "&media="+media;
-
+		url += "&media="+media;
         url += "&callback=?";
         
         $.getJSON(url, 
             function (json) {       
                 console.log(json);
-                console.log(json.results);
-
-                var lista = "<tr> <th> Musicas </th> <th> Preco</th> </tr>";
-
-                for (var i = 0; i < json.results.length; i++) {
-                    lista += "<tr> <td>"+ json.results[i].trackName +"</td>"+
-                                  "<td>"+ json.results[i].trackPrice +"</td>"+
-                            "</tr>";
-                }
-
-                document.getElementById("tabela").innerHTML = lista;
+                //console.log(json.results);
+				
+				var lista;
+				var n = json.resultCount;
+				
+				if (n) {
+					lista = "<table> <tr>";
+					
+				/*	for () {
+						lista += "<th>";
+						
+						lista += "</th>";
+					}
+				*/
+					
+					lista += "</tr>";
+					
+					for (var i = 0; i < n; i++) {
+						lista += "<tr> <td>"+ json.results[i].trackName +"</td>"+
+									  "<td>"+ json.results[i].trackPrice +"</td>"+
+								"</tr>";
+					}
+					
+					lista += "</table>";
+				}
+				
+				else {
+					lista = "Nenhum resultado foi encontrado.";	
+				}
+				
+                document.getElementById("result").innerHTML = lista;
         
         }).fail(function (evt) { //quando falha o getJSON
             alert("complete");
         });
     }
-
-
 
     </script>
     </head>
@@ -77,9 +94,9 @@
     <body>
     <h2> Consulta de dados do iTunes Search API </h2>
     <!-- Inicio do formulario -->
-        <label> Consulta (obrigatório): <br/>
-        <input type="text" id="term" value="" size="50" maxlength="50" /></label><br /> <br/>
-        <label> País (obrigatório): <br/>
+        <label> Consulta: <font size="1"> (obrigatório)</font> </label> <br/>
+        <input type="text" id="term" value="" size="50" maxlength="50" /></label> <br/> <br/>
+        <label> País: <br/>
         <select id="uf">
             <option value="AF">Afghanistan</option>
             <option value="AX">Åland Islands</option>
@@ -343,11 +360,12 @@
             <option value="software">software</option>
             <option value="ebook">ebook</option>
             <option value="all">all</option>
-        </select> <br /> <br/>
+        </select> <br/> <br/>
 
         <button id="botao" onclick="consulta()">Buscar</button>
-
-        <table id="tabela"></table>
+		
+		</br> </br>
+        <div id="result"></div>
     </body>
 
     </html>
